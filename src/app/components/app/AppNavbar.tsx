@@ -1,3 +1,4 @@
+
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar"
@@ -6,20 +7,23 @@ import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownM
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import SearchIcon from '@mui/icons-material/Search';
-import Profile from "./Profile"
+import ProfileButton from "./ProfileButton"
 
 
 const AppNavbar = () => {
     return (
         <div className="flex flex-col">
-            <header className="bg-none  text-white py-4 px-6 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <header className="bg-none  text-white py-4 px-6 flex gap-2">
+                <div className="flex items-center ">
                     <Link className="text-2xl font-bold" href="#">
                         BookWorm
                     </Link>
 
                 </div>
-                <Profile />
+                <div className="mr-0 ml-auto">
+                    <Link className=" bg-gray-600 rounded p-2 mr-2 " href="/cms" >Publish a Novel</Link>
+                    <ProfileButton />
+                </div>
             </header>
         </div>
     );

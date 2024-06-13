@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input"
 import SearchIcon from '@mui/icons-material/Search';
 import { signOut } from "next-auth/react";
+import ProfileButton from "./ProfileButton";
 const Profile = () => {
     return (
         <div className="flex items-center gap-4 ">
@@ -19,22 +20,7 @@ const Profile = () => {
                     type="text"
                 />
             </form>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button className="rounded-full" variant={"profile"}>
-                        <Avatar className="w-8 h-8">
-                            <AvatarImage alt="User Avatar" src="/placeholder-avatar.jpg" />
-                            <AvatarFallback>JD</AvatarFallback>
-                        </Avatar>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem>My Library</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem><button onClick={() => signOut({ callbackUrl: '/', redirect: true })} > Logout</button>  </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+            <ProfileButton />
         </div>
 
 

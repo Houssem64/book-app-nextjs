@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "scripts/seed.js"  ],
   "exclude": [
     "node_modules"
   ]

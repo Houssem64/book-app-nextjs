@@ -10,11 +10,39 @@ import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import { Suspense, useEffect } from "react"
+import { Suspense, useEffect, useState } from "react"
+import BookCard from "../book/BookCard";
+
+import axios from 'axios';
+interface Book {
+    _id: number;
+    title: string;
+    image: string;
+    description: string;
+    author: string;
+    content: string;
+    tags: string;
+    rating: number;
+    // Add more fields if needed
+}
 
 
 const Main = () => {
+    const [books, setBooks] = useState([]);
 
+    useEffect(() => {
+        const fetchBooks = async () => {
+            try {
+                const response = await axios.get('/api/books');
+                setBooks(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchBooks();
+    }, []);
     return (
 
         <div className="flex flex-col ">
@@ -61,36 +89,52 @@ const Main = () => {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                        <img
-                            alt="Book Cover"
-                            className="w-full h-[400px] object-cover"
-                            height={400}
-                            src="/placeholder.svg"
-                            style={{
-                                aspectRatio: "300/400",
-                                objectFit: "cover",
-                            }}
-                            width={300}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold mb-2">The Great Gatsby</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">F. Scott Fitzgerald</p>
-                            <div className="flex items-center gap-2 mb-4">
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-gray-400 dark:text-gray-600" />
-                                <StarIcon className="text-gray-400 dark:text-gray-600" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div>Fiction</div>
-                                <div>Classic</div>
-                                <div>Romance</div>
+
+                    {
+                        books.map((book: Book, i) => (
+
+                            <li
+
+                                key={i}>
+                                <a href={`/book/${book._id}`} style={{ textDecoration: 'none' }} >
+                                    <BookCard title={book.title} coverImage={book.image} description={book.description} author={book.author} tags={book.tags} rating={book.rating} />
+                                </a>
+                            </li>)
+                        )
+                    }
+
+
+
+                    {/*  {books.map((book) => (
+                        <div key={book.id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                            <img
+                                alt="Book Cover"
+                                className="w-full h-[400px] object-cover"
+                                height={400}
+                                src={book.coverImage || "/placeholder.svg"}
+                                style={{
+                                    aspectRatio: "300/400",
+                                    objectFit: "cover",
+                                }}
+                                width={300}
+                            />
+                            <div className="p-4">
+                                <h3 className="text-lg font-bold mb-2">{book.title}</h3>
+                                <p className="text-gray-600 dark:text-gray-400 mb-4">{book.author}</p>
+                                <div className="flex items-center gap-2 mb-4">
+                                    {Array(5).fill().map((_, i) => (
+                                        <StarIcon key={i} className={i < book.rating ? "text-yellow-500" : "text-gray-400 dark:text-gray-600"} />
+                                    ))}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {book.genres.map((genre, index) => (
+                                        <div key={index}>{genre}</div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
+                    ))} */}
+                    {/*                     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
                         <img
                             alt="Book Cover"
                             className="w-full h-[400px] object-cover"
@@ -234,7 +278,8 @@ const Main = () => {
                                 <div>Historical</div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
+
                 </div>
             </main>
         </div>

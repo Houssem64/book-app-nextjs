@@ -30,7 +30,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Transition>
-            {!session ? (<Navbar />) : null}
+
             {children}</Transition></body>
       </html>
     </AuthProvider>

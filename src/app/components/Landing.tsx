@@ -4,6 +4,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Navbar from "./Navbar";
+import PDFViewer from 'pdf-viewer-reactjs'
+
 export default function Component() {
   const session = useSession();
   const router = useRouter();
@@ -15,6 +18,7 @@ export default function Component() {
   return (
     <div className="bg-[#141414] text-white ">
 
+      <Navbar />
       <section className="px-4 py-20 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
         <div className="space-y-4 max-w-md mx-auto md:max-w-none">
           <h1 className="text-4xl md:text-5xl font-bold">Unlock the World of Books</h1>
