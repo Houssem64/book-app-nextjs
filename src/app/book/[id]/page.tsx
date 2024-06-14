@@ -10,7 +10,13 @@ import Image from "next/image";
 import LightIcon from '@mui/icons-material/Light';
 import ProfileButton from "@/app/components/app/ProfileButton";
 import styles from './book.module.css';
+import { useParams } from 'next/navigation'
 
+interface BookPageProps {
+  params: {
+    id: string; // Assuming `id` is of type string
+  };
+}
 interface Book {
   id: string;
   title: string;
@@ -20,9 +26,11 @@ interface Book {
   content: string;
 }
 
-export default function BookPage() {
+
+export default function BookPage({ params: { id } }: BookPageProps) {
   const router = useRouter();
-  const id = usePathname()
+  /* const id = usePathname() */
+  console.log(id);
 
   const [book, setBook] = useState<Book | null>(null);
   const [darkMode, setDarkMode] = useState(false);
@@ -31,7 +39,8 @@ export default function BookPage() {
     const fetchBook = async () => {
       try {
         // Ensure that `id` only contains the ID of the book, not `book/ID`
-        const bookId = id.replace('book/', '');
+        const bookId = id.replace('/book/', '');
+
         const response = await axios.get<Book>(`/api/books/${bookId}`);
         setBook(response.data);
       } catch (error) {
@@ -48,11 +57,12 @@ export default function BookPage() {
     setDarkMode(!darkMode);
   };
 
+
   return (
     <div className={darkMode ? 'dark-mode h-[100vh] w-[100vw]' : 'h-[100vh] w-[100vw]'}>
       <section className="flex w-[90%] mx-auto justify-between items-center pt-10 mb-10">
         <div className="text-2xl font-bold">
-          <Link href="/app">
+          <Link href="/main">
             <i style={{ fontSize: '20px', cursor: 'pointer' }} className="fas fa-chevron-left"></i>
           </Link>
         </div>
