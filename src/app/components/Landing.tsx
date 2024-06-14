@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "./Navbar";
-import PDFViewer from 'pdf-viewer-reactjs'
+
 
 export default function Component() {
   const session = useSession();

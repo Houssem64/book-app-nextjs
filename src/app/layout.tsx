@@ -6,7 +6,14 @@ import Transition from "./Transition";
 import AuthProvider from "./providers/AuthProvider";
 import { getServerSession } from 'next-auth/next';
 import AppNavbar from "./components/app/AppNavbar";
-
+import { dark } from "@clerk/themes";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,13 +33,18 @@ export default async function RootLayout({
 
 
   return (
-    <AuthProvider>
-      <html lang="en">
-        <body className={inter.className}>
-          <Transition>
+    <ClerkProvider appearance={{
+      baseTheme: dark
+    }}>
 
-            {children}</Transition></body>
-      </html>
-    </AuthProvider>
+      <AuthProvider>
+        <html lang="en">
+          <body className={inter.className}>
+            <Transition>
+
+              {children}</Transition></body>
+        </html>
+      </AuthProvider>
+    </ClerkProvider>
   );
 }

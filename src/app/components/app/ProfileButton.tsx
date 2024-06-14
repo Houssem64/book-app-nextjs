@@ -4,8 +4,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { useClerk } from '@clerk/nextjs';
+
 
 const ProfileButton = () => {
+    const { signOut } = useClerk();
+
     return (
         <>
             <DropdownMenu>
@@ -21,7 +25,7 @@ const ProfileButton = () => {
                     <DropdownMenuItem>My Library</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem><button onClick={() => signOut({ callbackUrl: '/', redirect: true })} > Logout</button>  </DropdownMenuItem>
+                    <DropdownMenuItem><button onClick={() => signOut({ redirectUrl: '/' })} > Logout</button>  </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu></>);
 }
