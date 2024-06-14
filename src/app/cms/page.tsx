@@ -2,6 +2,10 @@
 // pages/create-book.tsx
 import { useState } from 'react';
 import axios from 'axios';
+import ImageUpload from '../components/inputs/ImageUpload';
+import { toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+
 
 const CreateBook = () => {
     const [book, setBook] = useState({
@@ -13,6 +17,8 @@ const CreateBook = () => {
         tags: '',
         rating: 0,
     });
+
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -26,16 +32,27 @@ const CreateBook = () => {
         e.preventDefault();
         try {
             const response = await axios.post('/api/books', book);
-            console.log(response.data);
-            alert('Book created successfully');
-        } catch (error) {
-            console.error('Failed to create book:', error);
-            alert('Failed to create book');
+            if (response.status === 201) {
+                toast.success('Book created successfully');
+            }
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                if (err.response.status === 400) {
+                    toast.error('Please fill in all fields');
+                } else {
+                    // Extracting the error message from the response, if available
+                    const errorMessage = err.response.data.message || 'An error occurred';
+                    toast.error(`Error: ${errorMessage}`);
+                }
+            } else {
+                toast.error('An unknown error occurred');
+            }
         }
     };
 
     return (
         <>
+            <Toaster />
             <div className='w-full h-full bg-black'>
                 <div className="max-w-2xl mx-auto p-6 border border-gray-300 rounded-lg shadow-md">
                     <h1 className="text-2xl font-bold text-white text-center mb-6">Create a New Book</h1>
@@ -61,14 +78,15 @@ const CreateBook = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-white">Image URL:</label>
-                            <input
+                            <label className="mb-2 font-medium text-white">Upload Image</label>
+                            {/*                             <input
                                 type="text"
                                 name="image"
                                 value={book.image}
                                 onChange={handleChange}
                                 className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            />
+                            /> */}
+                            <ImageUpload value={book.image} onChange={(value) => book.image = value} />
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Description:</label>

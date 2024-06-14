@@ -2,8 +2,7 @@
 import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { signOut } from "next-auth/react";
-import Link from "next/link";
+
 import { useClerk } from '@clerk/nextjs';
 
 

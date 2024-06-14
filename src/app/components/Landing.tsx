@@ -8,12 +8,9 @@ import Navbar from "./Navbar";
 
 
 export default function Component() {
-  const session = useSession();
-  const router = useRouter();
-  if (session.status === "authenticated") {
-    router.push("/app");
-  }
-  else null;
+
+
+
 
   return (
     <div className="bg-[#141414] text-white ">

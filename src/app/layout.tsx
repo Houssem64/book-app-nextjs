@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Transition from "./Transition";
-import AuthProvider from "./providers/AuthProvider";
+
 import { getServerSession } from 'next-auth/next';
 import AppNavbar from "./components/app/AppNavbar";
 import { dark } from "@clerk/themes";
@@ -37,14 +37,14 @@ export default async function RootLayout({
       baseTheme: dark
     }}>
 
-      <AuthProvider>
-        <html lang="en">
-          <body className={inter.className}>
-            <Transition>
 
-              {children}</Transition></body>
-        </html>
-      </AuthProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Transition>
+
+            {children}</Transition></body>
+      </html>
+
     </ClerkProvider>
   );
 }

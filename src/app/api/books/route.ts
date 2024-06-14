@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/utils/connect';
 import Book from '@/models/book';
+import { toast } from 'react-hot-toast';
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
+
     const id = searchParams.get('_id')
     if (req.method === 'GET') {
         if (id) {
@@ -21,24 +23,34 @@ export async function GET(req: Request) {
 
 }
 export async function POST(req: Request) {
-    await connectDB();
-    const body = await req.json();
-    const { author, title, image, description, content, tags, rating } = body;
+    try {
+        await connectDB();
+        const body = await req.json();
+        const { author, title, image, description, content, tags, rating } = body;
+        if (!author || !title || !image || !description || !content || !tags || !rating) {
+            return NextResponse.json({ error: 'Please fill in all fields' }, { status: 400 });
+        }
+        const newBook = new Book({
+            author,
+            title,
+            image,
+            description,
+            content,
+            tags,
+            rating,
+        });
+        await newBook.save();
+        return NextResponse.json(newBook, { status: 201 });
+    } catch (error) {
+        // Log the error to the console for debugging purposes
+        console.error("Failed to create new book:", error);
 
+        // Display an error toast notification
+        toast.error("Failed to create new book. Please try again.");
 
-    const newBook = new Book({
-        author,
-        title,
-        image,
-        description,
-        content,
-        tags,
-        rating,
-    });
-    await newBook.save();
-    return NextResponse.json(newBook, { status: 201 });
-
-
+        // Return a server error response
+        return NextResponse.json({ error: "Failed to create new book" }, { status: 500 });
+    }
 }
 
 

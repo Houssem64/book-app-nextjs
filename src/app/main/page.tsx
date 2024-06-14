@@ -12,12 +12,7 @@ import { useAuth } from "@clerk/nextjs";
 const MainApp = () => {
     const { userId } = useAuth();
 
-    const router = useRouter();
-    if (!userId) {
-        router.push("/signin");
 
-
-    }
 
     return (<div>
         <Toaster />
