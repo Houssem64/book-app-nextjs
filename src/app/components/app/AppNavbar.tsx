@@ -19,10 +19,10 @@ import {
 const AppNavbar = () => {
     return (
         <SignedIn>
-            <div className="flex flex-col">
+            <div className="flex flex-col pt-2">
                 <header className="bg-none  text-white py-4 px-6 flex gap-2">
                     <div className="flex items-center ">
-                        <Link className="text-2xl font-bold" href="#">
+                        <Link className="text-2xl font-bold" href="/main">
                             BookWorm
                         </Link>
 

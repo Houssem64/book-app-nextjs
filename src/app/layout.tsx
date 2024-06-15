@@ -14,6 +14,7 @@ import {
   SignedOut,
   UserButton
 } from '@clerk/nextjs'
+import GradiantBlob from "./components/GradientBlob";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -41,7 +42,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
 
-
+          <GradiantBlob />
           {children}</body>
       </html>
 

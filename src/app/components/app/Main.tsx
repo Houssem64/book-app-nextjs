@@ -31,6 +31,7 @@ interface Book {
 
 const Main = () => {
     const [books, setBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -38,13 +39,30 @@ const Main = () => {
                 const response = await axios.get('/api/books');
                 setBooks(response.data);
                 console.log(response.data);
+
             } catch (error) {
                 console.error(error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchBooks();
     }, []);
+    if (loading) {
+        return (
+            <div className="h-screen flex justify-center items-center bg-black">
+                <svg fill='none' className="w-6 h-6 animate-spin text-white" viewBox="0 0 32 32" xmlns='http://www.w3.org/2000/svg'>
+                    <path clip-rule='evenodd'
+                        d='M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z'
+                        fill='currentColor' fill-rule='evenodd' />
+                </svg>
+
+
+                <div className="text-white">Loading ...</div>
+            </div>
+        );
+    }
     return (
 
         <div className="flex flex-col ">
@@ -90,7 +108,7 @@ const Main = () => {
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6  " >
 
                     {
                         books.map((book: Book, i) => (
@@ -98,7 +116,7 @@ const Main = () => {
                             <li
 
                                 key={i}>
-                                <a href={`/book/${book._id}`} style={{ textDecoration: 'none' }} >
+                                <a href={`/bookinfo/${book._id}`} style={{ textDecoration: 'none' }} >
                                     <BookCard title={book.title} coverImage={book.image} description={book.description} author={book.author} tags={book.tags} rating={book.rating} />
                                 </a>
                             </li>)

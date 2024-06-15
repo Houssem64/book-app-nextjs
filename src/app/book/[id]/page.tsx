@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,21 +17,30 @@ interface BookPageProps {
     id: string; // Assuming `id` is of type string
   };
 }
+interface Chapter {
+  title: string;
+  content: string;
+}
+
 interface Book {
   id: string;
   title: string;
   author: string;
   description: string;
   image: string;
-  content: string;
+  chapters: Chapter[];
+
+
 }
 
 
 export default function BookPage({ params: { id } }: BookPageProps) {
 
-
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [book, setBook] = useState<Book | null>(null);
   const [darkMode, setDarkMode] = useState(false);
+  const titleRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -53,7 +62,20 @@ export default function BookPage({ params: { id } }: BookPageProps) {
     setDarkMode(!darkMode);
   };
 
+  const goToNextChapter = () => {
+    const chaptersLength = book?.chapters?.length ?? 0; // Provide a default value of 0 if undefined
+    if (currentChapterIndex < chaptersLength - 1) {
+      setCurrentChapterIndex(currentChapterIndex + 1);
+      titleRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
 
+  };
+  const goToPreviousChapter = () => {
+    if (currentChapterIndex > 0) {
+      setCurrentChapterIndex(currentChapterIndex - 1);
+      titleRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
     <div className={darkMode ? 'dark-mode h-full w-full ' : 'h-full w-full'}>
       <section className="flex w-[90%] mx-auto justify-between items-center pt-10 mb-10">
@@ -76,18 +98,49 @@ export default function BookPage({ params: { id } }: BookPageProps) {
       </section>
 
       {book && (
-        <Card className={darkMode ? 'dark-mode mx-[15vw] text-wrap flex items-center justify-center' : 'mx-[15vw] text-wrap'}>
+        <Card className={darkMode ? 'dark-mode mx-[15vw] text-wrap' : 'mx-[15vw] text-wrap'}>
           <CardHeader>
             <CardTitle className="text-center text-3xl mb-1 font-bold">{book.title}</CardTitle>
             <CardDescription className="center small">{book.author}</CardDescription>
-            <CardDescription className="center small relative h-[90vh] w-[40vw] flex items-center justify-center ">
-              <div className="relative h-[90vh] w-[40vw] flex items-center justify-center">
+            <CardDescription className="center small relative h-auto mx-auto w-[25vw]  flex items-center justify-center ">
+              <div className="relative h-[90vh] mt-5  flex items-center justify-center">
                 <Image src={book.image} alt={book.description} layout="fill" objectFit="cover" objectPosition="center" quality={100} />
               </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {book.content}
+            {/*       {
+              (book.chapters as Chapter[]).map((chapter, index) => (
+                <div key={index}>
+                  <h2 className="text-2xl font-bold my-5 text-wrap text-center mx-auto">{chapter.title}</h2>
+                  <p className="font-sans  leading-relaxed w-3/4 p-4 text-wrap text-ellipsis text-justify mx-auto ">{chapter.content}</p>
+                </div>
+              ))
+            } */}
+            <div ref={titleRef} key={currentChapterIndex}>
+              <h2 className="text-2xl font-bold my-5 text-wrap text-center mx-auto">
+                {book.chapters[currentChapterIndex].title}
+              </h2>
+              <p className="font-sans leading-relaxed w-3/4 p-4 text-wrap text-ellipsis text-justify mx-auto">
+                {book.chapters[currentChapterIndex].content}
+              </p>
+            </div>
+            <div className="flex justify-center space-x-4 mt-4">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={goToPreviousChapter}
+                disabled={currentChapterIndex === 0}
+              >
+                Previous
+              </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={goToNextChapter}
+                disabled={currentChapterIndex === book.chapters.length - 1}
+              >
+                Next
+              </button>
+            </div>
           </CardContent>
         </Card>
       )}

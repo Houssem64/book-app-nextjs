@@ -15,6 +15,7 @@ import Counter from "@/app/components/Counter";
 import { Toaster } from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
+import DisqusComments from "@/app/components/Comments";
 
 interface BookPageProps {
   params: {
@@ -75,8 +76,15 @@ export default function BookPage({ params: { id } }: BookPageProps) {
   };
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center">
-        Loading...
+      <div className="h-screen flex justify-center items-center bg-black">
+        <svg fill='none' className="w-6 h-6 animate-spin text-white" viewBox="0 0 32 32" xmlns='http://www.w3.org/2000/svg'>
+          <path clip-rule='evenodd'
+            d='M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z'
+            fill='currentColor' fill-rule='evenodd' />
+        </svg>
+
+
+        <div className="text-white">Loading ...</div>
       </div>
     );
   }
@@ -86,11 +94,11 @@ export default function BookPage({ params: { id } }: BookPageProps) {
   return (
     <>
       <Toaster />
-      <div className="h-[100vh] w-[100vw] bg-black pt-2">
+      <div className="h-[100vh] w-[99vw] bg-black ">
         <AppNavbar />
         <div className="flex justify-center items-center gap-8 p-8">
           <div className="w-[350px]">
-            <img src={book?.image} alt="1984 by George Orwell" className="w-full aspect-[3/4] object-cover" />
+            <img src={book?.image} alt="1984 by George Orwell" className="w-full aspect-[3/4] object-cover rounded-md" />
             <div className="flex justify-between items-center mt-4">
 
             </div>
@@ -128,10 +136,15 @@ export default function BookPage({ params: { id } }: BookPageProps) {
             </div>
             <Counter />
           </div>
+
         </div>
 
 
 
-      </div></>
+      </div>
+      <div className="w-full p-10 bg-black text-white  h-full  justify-center items-center mx-auto">
+        <DisqusComments book={book} />
+      </div>
+    </>
   );
 }
