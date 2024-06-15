@@ -28,9 +28,7 @@ interface Book {
 
 
 export default function BookPage({ params: { id } }: BookPageProps) {
-  const router = useRouter();
-  /* const id = usePathname() */
-  console.log(id);
+
 
   const [book, setBook] = useState<Book | null>(null);
   const [darkMode, setDarkMode] = useState(false);
@@ -47,10 +45,8 @@ export default function BookPage({ params: { id } }: BookPageProps) {
         console.error(error);
       }
     };
+    fetchBook();
 
-    if (id) {
-      fetchBook();
-    }
   }, [id]);
 
   const toggleDarkMode = () => {
@@ -59,7 +55,7 @@ export default function BookPage({ params: { id } }: BookPageProps) {
 
 
   return (
-    <div className={darkMode ? 'dark-mode h-[100vh] w-[100vw]' : 'h-[100vh] w-[100vw]'}>
+    <div className={darkMode ? 'dark-mode h-full w-full ' : 'h-full w-full'}>
       <section className="flex w-[90%] mx-auto justify-between items-center pt-10 mb-10">
         <div className="text-2xl font-bold">
           <Link href="/main">
@@ -80,12 +76,14 @@ export default function BookPage({ params: { id } }: BookPageProps) {
       </section>
 
       {book && (
-        <Card className={darkMode ? 'dark-mode mx-[15vw] text-wrap' : 'mx-[15vw] text-wrap'}>
+        <Card className={darkMode ? 'dark-mode mx-[15vw] text-wrap flex items-center justify-center' : 'mx-[15vw] text-wrap'}>
           <CardHeader>
             <CardTitle className="text-center text-3xl mb-1 font-bold">{book.title}</CardTitle>
             <CardDescription className="center small">{book.author}</CardDescription>
-            <CardDescription className="center small">
-              <Image src={book.image} alt={book.description} className="w-full my-5 h-[400px] object-cover" height={400} width={300} quality={100} />
+            <CardDescription className="center small relative h-[90vh] w-[40vw] flex items-center justify-center ">
+              <div className="relative h-[90vh] w-[40vw] flex items-center justify-center">
+                <Image src={book.image} alt={book.description} layout="fill" objectFit="cover" objectPosition="center" quality={100} />
+              </div>
             </CardDescription>
           </CardHeader>
           <CardContent>

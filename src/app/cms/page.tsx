@@ -13,11 +13,31 @@ const CreateBook = () => {
         title: '',
         image: '',
         description: '',
-        content: '',
+        chapters: [{ title: '', content: '' }],
         tags: '',
         rating: 0,
     });
 
+    const handleChapterChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        const newChapters = [...book.chapters];
+        newChapters[index] = { ...newChapters[index], [name]: value };
+        setBook({ ...book, chapters: newChapters });
+    };
+
+    const addChapter = () => {
+        setBook((prevBook) => ({
+            ...prevBook,
+            chapters: [...prevBook.chapters, { title: '', content: '' }],
+        }));
+    };
+
+    const removeChapter = (index: number) => {
+        setBook((prevBook) => ({
+            ...prevBook,
+            chapters: prevBook.chapters.filter((_, i) => i !== index),
+        }));
+    };
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -79,14 +99,7 @@ const CreateBook = () => {
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Upload Image</label>
-                            {/*                             <input
-                                type="text"
-                                name="image"
-                                value={book.image}
-                                onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            /> */}
-                            <ImageUpload value={book.image} onChange={(value) => book.image = value} />
+                            <ImageUpload value={book.image} onChange={(value) => setBook({ ...book, image: value })} />
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Description:</label>
@@ -94,17 +107,37 @@ const CreateBook = () => {
                                 name="description"
                                 value={book.description}
                                 onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white "
+                                className="p-2 border border-gray-300 rounded-md bg-transparent cursor-text caret-white text-white "
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-white">Content:</label>
-                            <textarea
-                                name="content"
-                                value={book.content}
-                                onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            />
+                            <label className="mb-2 font-medium text-white">Chapters:</label>
+                            {book.chapters.map((chapter, index) => (
+                                <div key={index} className="space-y-2">
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        placeholder={`Chapter ${index + 1} Title`}
+                                        value={chapter.title}
+                                        onChange={(e) => handleChapterChange(index, e)}
+                                        className="p-2 border border-gray-300 rounded-md bg-transparent  cursor-text caret-white text-white"
+                                    />
+                                    <br></br>
+                                    <textarea
+                                        name="content"
+                                        placeholder={`Chapter ${index + 1} Content`}
+                                        value={chapter.content}
+                                        onChange={(e) => handleChapterChange(index, e)}
+                                        className="p-2 border  border-gray-300 rounded-md bg-transparent cursor-text h-[200px] col-span-4 w-full caret-white text-white"
+                                    />
+                                    <button type="button" onClick={() => removeChapter(index)} className="text-red-500 mb-4 pb-4">
+                                        Remove Chapter
+                                    </button>
+                                </div>
+                            ))}
+                            <button type="button" onClick={addChapter} className="px-4 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                Add Chapter
+                            </button>
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Tags (comma separated):</label>
@@ -129,14 +162,16 @@ const CreateBook = () => {
                             />
                         </div>
                         <div></div>
-                        <button type="submit" className="px-4  py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <button type="submit" className="px-4 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
                             Create Book
                         </button>
                     </form>
-                </div></div></>
+                </div>
+            </div>
+        </>
     );
-};
 
+}
 export default CreateBook;
 
 /* import { useState } from 'react';

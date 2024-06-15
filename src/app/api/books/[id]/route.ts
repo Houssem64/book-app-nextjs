@@ -5,19 +5,21 @@ import Book from '@/models/book';
 
 
 // Ensure the database is connected
-connectDB();
+
 
 export async function GET(req: Request) {
     if (req.method === 'GET') {
 
-
+        await connectDB();
         try {
             const reqURL = new URL(req.url);
             const segments = reqURL.pathname.split('/');
 
             /*    const book = await Book.findById(id); */
             const bookId = segments.pop();
-            const book = await Book.findById(bookId);
+            const book = await Book.findById(bookId)
+            await Book.updateOne({ _id: bookId }, { $inc: { counter: 1 } });
+
             return NextResponse.json(book)
         } catch (error) {
             return NextResponse.json({ error: 'Server error' }, { status: 500 });
