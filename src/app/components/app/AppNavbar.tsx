@@ -13,8 +13,10 @@ import {
     SignedIn,
     SignedOut,
     SignInButton,
-    UserButton,
+
 } from "@clerk/nextjs";
+import PublishButton from "../Button"
+import { UserButton } from "@/app/components/UserButton";
 
 const AppNavbar = () => {
     return (
@@ -27,12 +29,13 @@ const AppNavbar = () => {
                         </Link>
 
                     </div>
-                    <div className="mr-0 ml-auto justify-center items-center">
-                        <Link className=" bg-gray-600 rounded p-2 mr-2 " href="/cms" >Publish a Novel</Link>
-
+                    <div className="mr-0 ml-auto flex justify-center items-center">
+                        {/*   <Link className=" bg-white hover:bg-slate-500 text-black font-bold rounded p-2 px-3 mr-2 " href="/cms" >Publish a Novel</Link> */}
+                        <PublishButton />
+                        <UserButton />
                     </div>
                     <div>
-                        <UserButton />
+
                     </div>
                 </header>
             </div>

@@ -11,6 +11,7 @@ import LightIcon from '@mui/icons-material/Light';
 import ProfileButton from "@/app/components/app/ProfileButton";
 import styles from './book.module.css';
 import { useParams } from 'next/navigation'
+import { UserButton } from "@/app/components/UserButton";
 
 interface BookPageProps {
   params: {
@@ -40,7 +41,7 @@ export default function BookPage({ params: { id } }: BookPageProps) {
   const [book, setBook] = useState<Book | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   const titleRef = useRef<HTMLDivElement>(null);
-
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -52,11 +53,27 @@ export default function BookPage({ params: { id } }: BookPageProps) {
         setBook(response.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchBook();
 
   }, [id]);
+  if (loading) {
+    return (
+      <div className="h-screen flex justify-center items-center bg-black">
+        <svg fill='none' className="w-6 h-6 animate-spin text-white" viewBox="0 0 32 32" xmlns='http://www.w3.org/2000/svg'>
+          <path clip-rule='evenodd'
+            d='M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z'
+            fill='currentColor' fill-rule='evenodd' />
+        </svg>
+
+
+        <div className="text-white">Loading ...</div>
+      </div>
+    );
+  }
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -89,8 +106,8 @@ export default function BookPage({ params: { id } }: BookPageProps) {
             {book?.title}
           </h2>
         </div>
-        <div>
-          <ProfileButton />
+        <div className="flex items-center">
+          <UserButton />
           <button onClick={toggleDarkMode} className="mx-2">
             <LightIcon />
           </button>
@@ -98,7 +115,7 @@ export default function BookPage({ params: { id } }: BookPageProps) {
       </section>
 
       {book && (
-        <Card className={darkMode ? 'dark-mode mx-[15vw] text-wrap' : 'mx-[15vw] text-wrap'}>
+        <Card className={darkMode ? 'dark-mode mx-[15vw] bg-transparent text-wrap' : 'mx-[15vw] text-wrap'}>
           <CardHeader>
             <CardTitle className="text-center text-3xl mb-1 font-bold">{book.title}</CardTitle>
             <CardDescription className="center small">{book.author}</CardDescription>
