@@ -26,3 +26,26 @@ export async function GET(req: Request) {
         }
     }
 }
+
+
+
+export async function DELETE(req: Request) {
+    if (req.method === 'DELETE') {
+
+        await connectDB();
+        try {
+            const reqURL = new URL(req.url);
+            const segments = reqURL.pathname.split('/');
+
+            /*    const book = await Book.findById(id); */
+            const bookId = segments.pop();
+            const book = await Book.findByIdAndDelete(bookId)
+
+
+
+            return new Response(JSON.stringify(book), { status: 200 });
+        } catch (error) {
+            return NextResponse.json({ error: 'Server error' }, { status: 500 });
+        }
+    }
+}

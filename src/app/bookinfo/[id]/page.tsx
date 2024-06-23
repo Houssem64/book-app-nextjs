@@ -32,6 +32,7 @@ interface Book {
   tags: string[];
   rating: number;
   counter: number;
+  createdAt: string
   // Add more fields if needed
 }
 
@@ -89,7 +90,7 @@ export default function BookPage({ params: { id } }: BookPageProps) {
     );
   }
   const splitFirstTag = book?.tags[0].split(' ') || [];
-  const formattedDate = format(new Date("2024-06-15T03:51:25.387+00:00"), 'MMMM d, yyyy');
+
 
   return (
     <>
@@ -123,7 +124,7 @@ export default function BookPage({ params: { id } }: BookPageProps) {
 
             </div>
             <p className="text-sm text-white">Language: English</p>
-            <Badge className="text-sm "><CalendarTodayIcon className="mr-2" /> Published  At: {formattedDate} </Badge>
+            <Badge className="text-sm "><CalendarTodayIcon className="mr-2" /> Published  At: {book?.createdAt ? format(new Date(book.createdAt), 'MMMM d, yyyy') : 'Unknown'} </Badge>
             <Button className="w-full bg-white text-black" onClick={() => router.push(`/book/${book?._id}`)} >Read Now</Button>
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white">Book Description</h2>
