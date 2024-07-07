@@ -4,6 +4,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import axios from "axios";
+import Comments from "@/app/components/Comments";
 import { format } from 'date-fns';
 import AppNavbar from "@/app/components/app/AppNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -15,7 +16,7 @@ import Counter from "@/app/components/Counter";
 import { Toaster } from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
-import DisqusComments from "@/app/components/Comments";
+
 
 interface BookPageProps {
   params: {
@@ -144,7 +145,7 @@ export default function BookPage({ params: { id } }: BookPageProps) {
 
       </div>
       <div className="w-full p-10 bg-black text-white  h-full  justify-center items-center mx-auto">
-        <DisqusComments book={book} />
+        <Comments bookId={book?._id.toString() || ''} />
       </div>
     </>
   );

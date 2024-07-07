@@ -27,7 +27,7 @@ const Main = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const tags = ["fiction", "non-fiction", "mystery", "romance", "fantasy", "science", "history", "biography", "self-help", "children"];
+    const tags = ["Ut", "non-fiction", "mystery", "romance", "fantasy", "science", "history", "biography", "self-help", "children"];
 
     useEffect(() => {
         const fetchBooks = async () => {
