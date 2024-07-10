@@ -1,84 +1,78 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/utils/connect';
-import Book from '@/models/book';
-import { toast } from 'react-hot-toast';
-export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url)
+import Book, { IBook } from '@/models/book';
+import { currentUser } from '@clerk/nextjs/server';
 
-    const id = searchParams.get('_id')
+export async function GET(req: Request) {
+    await connectDB();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('_id');
+
     if (req.method === 'GET') {
         if (id) {
-            const book = await Book.findById(id);
-            if (!book) {
-                return NextResponse.json({ error: 'Book not found' }, { status: 404 });
+            try {
+                const book = await Book.findById(id);
+                if (!book) {
+                    return NextResponse.json({ error: 'Book not found' }, { status: 404 });
+                }
+                return NextResponse.json(book);
+            } catch (error) {
+                return NextResponse.json({ error: 'Server error' }, { status: 500 });
             }
-            return NextResponse.json(book);
         } else {
-            const books = await Book.find({});
-            return NextResponse.json(books);
+            try {
+                const books = await Book.find({});
+                return NextResponse.json(books);
+            } catch (error) {
+                return NextResponse.json({ error: 'Server error' }, { status: 500 });
+            }
         }
     } else {
-        NextResponse.json({ error: 'not allowed' }, { status: 401 });
+        return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
     }
-
 }
+
+
+
 export async function POST(req: Request) {
+    await connectDB();
+    const user = await currentUser();
+    const userId = user?.id;
+    if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     try {
-        await connectDB();
         const body = await req.json();
-        const { author, title, image, description, content, tags, rating } = body;
-        if (!author || !title || !image || !description || !content || !tags || !rating) {
+        const { author, title, image, description, chapters, tags, rating } = body;
+
+        if (!author || !title || !description || !Array.isArray(chapters) || chapters.length === 0 || !tags || !rating) {
             return NextResponse.json({ error: 'Please fill in all fields' }, { status: 400 });
         }
-        const newBook = new Book({
+
+        // Validate each chapter in the chapters array
+        for (const chapter of chapters) {
+            if (!chapter.title || !chapter.content) {
+                return NextResponse.json({ error: 'Each chapter must have a title and content' }, { status: 400 });
+            }
+        }
+
+        const newBook: IBook = new Book({
+            userId,
             author,
             title,
             image,
             description,
-            content,
+            chapters, // Ensure chapters array includes title and content
             tags,
             rating,
+
+
         });
+
         await newBook.save();
         return NextResponse.json(newBook, { status: 201 });
     } catch (error) {
-        // Log the error to the console for debugging purposes
-        console.error("Failed to create new book:", error);
-
-        // Display an error toast notification
-        toast.error("Failed to create new book. Please try again.");
-
-        // Return a server error response
-        return NextResponse.json({ error: "Failed to create new book" }, { status: 500 });
+        console.error('Error creating book:', error);
+        return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 }
-
-
-
-
-
-
-
-
-
-/* // pages/api/books.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import connectDB from '@/utils/connect';
-import Book from '@/models/book';
-
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    await connectDB();
-
-    if (req.method === 'GET') {
-        try {
-            const books = await Book.find({});
-            res.status(200).json(books);
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to fetch books' });
-        }
-    } else {
-        res.status(405).json({ message: 'Method not allowed' });
-    }
-}
- */

@@ -13,26 +13,29 @@ import {
     SignedIn,
     SignedOut,
     SignInButton,
-    UserButton,
+
 } from "@clerk/nextjs";
+import PublishButton from "../Button"
+import { UserButton } from "@/app/components/UserButton";
 
 const AppNavbar = () => {
     return (
         <SignedIn>
-            <div className="flex flex-col">
+            <div className="flex flex-col pt-2">
                 <header className="bg-none  text-white py-4 px-6 flex gap-2">
                     <div className="flex items-center ">
-                        <Link className="text-2xl font-bold" href="#">
+                        <Link className="text-2xl font-bold" href="/main">
                             BookWorm
                         </Link>
 
                     </div>
-                    <div className="mr-0 ml-auto justify-center items-center">
-                        <Link className=" bg-gray-600 rounded p-2 mr-2 " href="/cms" >Publish a Novel</Link>
-
+                    <div className="mr-0 ml-auto flex justify-center items-center">
+                        {/*   <Link className=" bg-white hover:bg-slate-500 text-black font-bold rounded p-2 px-3 mr-2 " href="/cms" >Publish a Novel</Link> */}
+                        <PublishButton />
+                        <UserButton />
                     </div>
                     <div>
-                        <UserButton />
+
                     </div>
                 </header>
             </div>

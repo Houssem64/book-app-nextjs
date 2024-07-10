@@ -5,6 +5,10 @@ import axios from 'axios';
 import ImageUpload from '../components/inputs/ImageUpload';
 import { toast } from 'react-hot-toast';
 import { Toaster } from 'react-hot-toast';
+import AppNavbar from '../components/app/AppNavbar';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 
 const CreateBook = () => {
@@ -13,11 +17,31 @@ const CreateBook = () => {
         title: '',
         image: '',
         description: '',
-        content: '',
+        chapters: [{ title: '', content: '' }],
         tags: '',
         rating: 0,
     });
 
+    const handleChapterChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        const newChapters = [...book.chapters];
+        newChapters[index] = { ...newChapters[index], [name]: value };
+        setBook({ ...book, chapters: newChapters });
+    };
+
+    const addChapter = () => {
+        setBook((prevBook) => ({
+            ...prevBook,
+            chapters: [...prevBook.chapters, { title: '', content: '' }],
+        }));
+    };
+
+    const removeChapter = (index: number) => {
+        setBook((prevBook) => ({
+            ...prevBook,
+            chapters: prevBook.chapters.filter((_, i) => i !== index),
+        }));
+    };
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -53,90 +77,107 @@ const CreateBook = () => {
     return (
         <>
             <Toaster />
-            <div className='w-full h-full bg-black'>
-                <div className="max-w-2xl mx-auto p-6 border border-gray-300 rounded-lg shadow-md">
+            <div className='w-full h-full bg-black '>
+                <AppNavbar />
+                <div className="max-w-4xl    mx-auto p-6 border border-gray-300 bg-[#18181b] rounded-lg shadow-md">
                     <h1 className="text-2xl font-bold text-white text-center mb-6">Create a New Book</h1>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Author:</label>
-                            <input
+                            <Input
                                 type="text"
                                 name="author"
                                 value={book.author}
                                 onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md bg-transparent cursor-text caret-white text-white"
+                                className="bg-gray-800 px-3 py-2 rounded-md text-white w-full"
                             />
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Title:</label>
-                            <input
+                            <Input
                                 type="text"
                                 name="title"
                                 value={book.title}
                                 onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
+                                className="bg-gray-800 px-3 py-2 rounded-md text-white w-full"
                             />
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Upload Image</label>
-                            {/*                             <input
-                                type="text"
-                                name="image"
-                                value={book.image}
-                                onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            /> */}
-                            <ImageUpload value={book.image} onChange={(value) => book.image = value} />
+                            <ImageUpload value={book.image} onChange={(value) => setBook({ ...book, image: value })} />
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-2 font-medium text-white">Description:</label>
-                            <textarea
+                            <Textarea
                                 name="description"
                                 value={book.description}
                                 onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white "
+                                className="bg-gray-800 px-3 py-2 rounded-md text-white w-full h-32 resize-none"
                             />
                         </div>
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-white">Content:</label>
-                            <textarea
-                                name="content"
-                                value={book.content}
-                                onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            />
-                        </div>
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-white">Tags (comma separated):</label>
-                            <input
-                                type="text"
-                                name="tags"
-                                value={book.tags}
-                                onChange={handleChange}
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            />
-                        </div>
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-white">Rating:</label>
-                            <input
-                                type="number"
-                                name="rating"
-                                value={book.rating}
-                                onChange={handleChange}
-                                min="0"
-                                max="5"
-                                className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
-                            />
-                        </div>
-                        <div></div>
-                        <button type="submit" className="px-4  py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            Create Book
-                        </button>
-                    </form>
-                </div></div></>
-    );
-};
+                        <div>                        <div className="flex flex-col">
+                            <label className="mb-2 font-medium text-white">Chapters:</label>
+                            {book.chapters.map((chapter, index) => (
+                                <div key={index} className="space-y-2">
+                                    <Input
+                                        type="text"
+                                        name="title"
+                                        placeholder={`Chapter ${index + 1} Title`}
+                                        value={chapter.title}
+                                        onChange={(e) => handleChapterChange(index, e)}
+                                        className="bg-gray-800 px-3 py-2 rounded-md text-white w-full"
+                                    />
+                                    <br></br>
+                                    <Textarea
+                                        name="content"
+                                        placeholder={`Chapter ${index + 1} Content`}
+                                        value={chapter.content}
+                                        onChange={(e) => handleChapterChange(index, e)}
+                                        className="bg-gray-800 px-3 py-2 rounded-md text-white w-full h-32 resize-none"
+                                    />
+                                    <button type="button" onClick={() => removeChapter(index)} className="text-red-500 mb-4 pb-4">
+                                        Remove Chapter
+                                    </button>
+                                </div>
+                            ))}
 
+                            <Button type="button" onClick={addChapter} className="bg-purple-600 mb-2 text-white w-full py-2 rounded-md"> Add Chapter</Button>
+                        </div>
+                            <div className="flex flex-col">
+                                <label className="mb-2 font-medium text-white">Tags (comma separated):</label>
+                                <input
+                                    type="text"
+                                    name="tags"
+                                    value={book.tags}
+                                    onChange={handleChange}
+                                    className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label className="mb-2 font-medium text-white">Rating:</label>
+                                <input
+                                    type="number"
+                                    name="rating"
+                                    value={book.rating}
+                                    onChange={handleChange}
+                                    min="0"
+                                    max="5"
+                                    className="p-2 border border-gray-300 rounded-md  bg-transparent cursor-text caret-white text-white"
+                                />
+                            </div>
+                            <div></div></div>
+                        {/*   <button type="submit" className="px-4 py-2 bg-white text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                            Create Book
+                        </button> */}
+                        <Button type="submit" className="bg-purple-600 text-white w-full py-2 rounded-md">Publish Book</Button>
+
+                    </form>
+                </div>
+            </div>
+        </>
+    );
+
+}
 export default CreateBook;
 
 /* import { useState } from 'react';

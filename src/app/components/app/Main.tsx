@@ -1,21 +1,14 @@
 "use client";
-import Link from "next/link"
-import { Input } from "@/components/ui/input"
-import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
-import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import SearchIcon from '@mui/icons-material/Search';
-import StarIcon from '@mui/icons-material/Star';
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import BookCard from "../book/BookCard";
-
-
-
 import axios from 'axios';
+
 interface Book {
     _id: number;
     title: string;
@@ -23,14 +16,18 @@ interface Book {
     description: string;
     author: string;
     content: string;
-    tags: string;
+    tags: string[];
     rating: number;
     // Add more fields if needed
 }
 
-
 const Main = () => {
-    const [books, setBooks] = useState([]);
+    const [selectedTag, setSelectedTag] = useState('all'); // For tag filter buttons
+    const [searchQuery, setSearchQuery] = useState(''); // For search bar
+    const [books, setBooks] = useState<Book[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const tags = ["ut", "non-fiction", "mystery", "romance", "fantasy", "science", "history", "biography", "self-help", "children"];
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -40,252 +37,103 @@ const Main = () => {
                 console.log(response.data);
             } catch (error) {
                 console.error(error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchBooks();
     }, []);
-    return (
 
-        <div className="flex flex-col ">
+    if (loading) {
+        return (
+            <div className="h-screen flex justify-center items-center bg-black">
+                <svg fill='none' className="w-6 h-6 animate-spin text-white" viewBox="0 0 32 32" xmlns='http://www.w3.org/2000/svg'>
+                    <path clip-rule='evenodd' d='M15.165 8.53a.5.5 0 01-.404.58A7 7 0 1023 16a.5.5 0 011 0 8 8 0 11-9.416-7.874.5.5 0 01.58.404z' fill='currentColor' fill-rule='evenodd' />
+                </svg>
+                <div className="text-white">Loading ...</div>
+            </div>
+        );
+    }
+
+    const filteredBooks = books.filter((book: Book) => {
+        const searchTerm = searchQuery.toLowerCase();
+        const tagsString = book.tags.join(" ").toLowerCase();
+
+        const matchesSearchQuery = book.title.toLowerCase().includes(searchTerm) ||
+            book.author.toLowerCase().includes(searchTerm) ||
+            book.description.toLowerCase().includes(searchTerm) ||
+            tagsString.includes(searchTerm);
+
+        if (selectedTag === 'all') {
+            return matchesSearchQuery;
+        } else {
+            return matchesSearchQuery && book.tags.includes(selectedTag);
+        }
+    });
+
+    function handleSearch(term: string) {
+        setSearchQuery(term);
+        console.log(term);
+    }
+
+    function handleTagChange(tag: string) {
+        setSelectedTag(tag);
+        console.log(tag);
+    }
+
+    function handleFilterReset() {
+        setSelectedTag('all');
+        setSearchQuery('');
+    }
+
+    return (
+        <div className="flex flex-col">
             <main className="flex-1 bg-none dark:bg-gray-900 py-8 px-6">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                        <Button className="text-gray-600 dark:text-gray-400" variant="outline">
+                        <Button className="text-gray-600 dark:text-gray-400" variant="outline" onClick={handleFilterReset}>
                             <FilterAltIcon className="mr-2" />
-                            Filters
+                            Reset Filters
                         </Button>
-                        <RadioGroup className="flex items-center gap-4" defaultValue="all">
-                            <RadioGroupItem className="peer sr-only" id="all" value="all" />
-                            <Label
-                                className="px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer peer-checked:bg-blue-500 peer-checked:text-white"
-                                htmlFor="all"
-                            >
-                                All
-                            </Label>
-                            <RadioGroupItem className="peer sr-only" id="fiction" value="fiction" />
-                            <Label
-                                className="px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer peer-checked:bg-blue-500 peer-checked:text-white"
-                                htmlFor="fiction"
-                            >
-                                Fiction
-                            </Label>
-                            <RadioGroupItem className="peer sr-only" id="non-fiction" value="non-fiction" />
-                            <Label
-                                className="px-4 py-2 rounded-md bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer peer-checked:bg-blue-500 peer-checked:text-white"
-                                htmlFor="non-fiction"
-                            >
-                                Non-Fiction
-                            </Label>
-                        </RadioGroup>
+                        <div className="flex items-center gap-4">
+                            {tags.map((tag) => (
+                                <Button
+                                    key={tag}
+                                    variant={selectedTag === tag ? "default" : "outline"}
+                                    onClick={() => handleTagChange(tag)}
+                                    className={selectedTag === tag ? "bg-blue-500 text-white" : "text-gray-600 dark:text-gray-400"}
+                                >
+                                    {tag}
+                                </Button>
+                            ))}
+                        </div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Button className="text-gray-600 dark:text-gray-400" variant="outline">
-                            <StarIcon className="mr-2" />
-                            Top Rated
-                        </Button>
-                        <Button className="text-gray-600 dark:text-gray-400" variant="outline">
-                            <LocalOfferIcon className="mr-2" />
-                            My Tags
-                        </Button>
+                        <Input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            className="hover:scale-125 transition duration-300 ease-in-out mr-4 text-white caret-white"
+                        />
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-                    {
-                        books.map((book: Book, i) => (
-
-                            <li
-
-                                key={i}>
-                                <a href={`/book/${book._id}`} style={{ textDecoration: 'none' }} >
+                    {filteredBooks.length > 0 ? (
+                        filteredBooks.map((book, i) => (
+                            <li key={i}>
+                                <a href={`/bookinfo/${book._id}`} style={{ textDecoration: 'none' }}>
                                     <BookCard title={book.title} coverImage={book.image} description={book.description} author={book.author} tags={book.tags} rating={book.rating} />
                                 </a>
-                            </li>)
-                        )
-                    }
-
-
-
-                    {/*  {books.map((book) => (
-                        <div key={book.id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                            <img
-                                alt="Book Cover"
-                                className="w-full h-[400px] object-cover"
-                                height={400}
-                                src={book.coverImage || "/placeholder.svg"}
-                                style={{
-                                    aspectRatio: "300/400",
-                                    objectFit: "cover",
-                                }}
-                                width={300}
-                            />
-                            <div className="p-4">
-                                <h3 className="text-lg font-bold mb-2">{book.title}</h3>
-                                <p className="text-gray-600 dark:text-gray-400 mb-4">{book.author}</p>
-                                <div className="flex items-center gap-2 mb-4">
-                                    {Array(5).fill().map((_, i) => (
-                                        <StarIcon key={i} className={i < book.rating ? "text-yellow-500" : "text-gray-400 dark:text-gray-600"} />
-                                    ))}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    {book.genres.map((genre, index) => (
-                                        <div key={index}>{genre}</div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    ))} */}
-                    {/*                     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                        <img
-                            alt="Book Cover"
-                            className="w-full h-[400px] object-cover"
-                            height={400}
-                            src="/placeholder.svg"
-                            style={{
-                                aspectRatio: "300/400",
-                                objectFit: "cover",
-                            }}
-                            width={300}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold mb-2">Atomic Habits</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">James Clear</p>
-                            <div className="flex items-center gap-2 mb-4">
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-gray-400 dark:text-gray-600" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div>Non-Fiction</div>
-                                <div>Self-Help</div>
-                                <div>Productivity</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                        <img
-                            alt="Book Cover"
-                            className="w-full h-[400px] object-cover"
-                            height={400}
-                            src="/placeholder.svg"
-                            style={{
-                                aspectRatio: "300/400",
-                                objectFit: "cover",
-                            }}
-                            width={300}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold mb-2">The Subtle Art of Not Giving a F*ck</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">Mark Manson</p>
-                            <div className="flex items-center gap-2 mb-4">
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div>Non-Fiction</div>
-                                <div>Self-Help</div>
-                                <div>Humor</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                        <img
-                            alt="Book Cover"
-                            className="w-full h-[400px] object-cover"
-                            height={400}
-                            src="/placeholder.svg"
-                            style={{
-                                aspectRatio: "300/400",
-                                objectFit: "cover",
-                            }}
-                            width={300}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold mb-2">The Alchemist</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">Paulo Coelho</p>
-                            <div className="flex items-center gap-2 mb-4">
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-gray-400 dark:text-gray-600" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div>Fiction</div>
-                                <div>Inspirational</div>
-                                <div>Adventure</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                        <img
-                            alt="Book Cover"
-                            className="w-full h-[400px] object-cover"
-                            height={400}
-                            src="/placeholder.svg"
-                            style={{
-                                aspectRatio: "300/400",
-                                objectFit: "cover",
-                            }}
-                            width={300}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold mb-2">Educated</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">Tara Westover</p>
-                            <div className="flex items-center gap-2 mb-4">
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div>Non-Fiction</div>
-                                <div>Memoir</div>
-                                <div>Education</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md">
-                        <img
-                            alt="Book Cover"
-                            className="w-full h-[400px] object-cover"
-                            height={400}
-                            src="/placeholder.svg"
-                            style={{
-                                aspectRatio: "300/400",
-                                objectFit: "cover",
-                            }}
-                            width={300}
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-bold mb-2">The Kite Runner</h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-4">Khaled Hosseini</p>
-                            <div className="flex items-center gap-2 mb-4">
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-yellow-500" />
-                                <StarIcon className="text-gray-400 dark:text-gray-600" />
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div>Fiction</div>
-                                <div>Drama</div>
-                                <div>Historical</div>
-                            </div>
-                        </div>
-                    </div> */}
-
+                            </li>
+                        ))
+                    ) : (
+                        <div className="col-span-full flex items-center justify-center text-center text-white w-full h-[80vh]">No books found</div>
+                    )}
                 </div>
             </main>
         </div>
-
     );
 }
 

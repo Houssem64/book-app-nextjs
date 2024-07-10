@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
 import AppNavbar from "../components/app/AppNavbar";
 import { useAuth } from "@clerk/nextjs";
+import { useState } from "react";
 
 const MainApp = () => {
     const { userId } = useAuth();
@@ -16,7 +17,7 @@ const MainApp = () => {
 
     return (<div>
         <Toaster />
-        <div className="bg-black">
+        <div className="bg-black bg-opacity-95 backdrop-blur-lg ">
             <AppNavbar />
             <Main />
         </div>

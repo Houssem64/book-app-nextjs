@@ -15,5 +15,5 @@ export default async function handler(
 
     // use the user object to decide what data to return
 
-    return res.status(200).json({});
+    return res.status(200).json({ user });
 }
