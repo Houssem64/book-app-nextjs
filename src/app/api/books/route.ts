@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/utils/connect';
 import Book, { IBook } from '@/models/book';
-
+import { currentUser } from '@clerk/nextjs/server';
 
 export async function GET(req: Request) {
     await connectDB();
@@ -36,6 +36,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     await connectDB();
+    const user = await currentUser();
+    const userId = user?.id;
+    if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const body = await req.json();
         const { author, title, image, description, chapters, tags, rating } = body;
@@ -52,6 +57,7 @@ export async function POST(req: Request) {
         }
 
         const newBook: IBook = new Book({
+            userId,
             author,
             title,
             image,
@@ -59,6 +65,7 @@ export async function POST(req: Request) {
             chapters, // Ensure chapters array includes title and content
             tags,
             rating,
+
 
         });
 

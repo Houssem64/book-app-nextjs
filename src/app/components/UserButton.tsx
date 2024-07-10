@@ -5,6 +5,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import Link from 'next/link'
 import {
     ArrowPathIcon,
@@ -114,6 +115,14 @@ const UserButtonAndMenu = () => {
                                 <UserIcon className="mr-2 h-6 w-auto" />
                                 Profile
                             </Button>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item asChild className="outline-none">
+                            <Link href="/mypublications" passHref>
+                                <Button className="py-2" variant="menu" size="small">
+                                    <LibraryBooksIcon className="mr-2 h-6 w-auto" />
+                                    My Publications
+                                </Button>
+                            </Link>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item asChild className="outline-none">
                             <Link href="/mylibrary" passHref>

@@ -6,6 +6,7 @@ export interface IChapter extends Document {
 }
 
 export interface IBook extends Document {
+    userId: string;  // Added userId field
     author: string;
     title: string;
     image: string;
@@ -14,7 +15,6 @@ export interface IBook extends Document {
     tags: string[];
     rating: number;
     counter: number;
-
 }
 
 const ChapterSchema: Schema = new Schema({
@@ -23,6 +23,7 @@ const ChapterSchema: Schema = new Schema({
 });
 
 const BookSchema: Schema = new Schema({
+    userId: { type: String, required: true },  // Added userId field
     author: { type: String, required: true },
     title: { type: String, required: true },
     image: { type: String, default: 'https://via.placeholder.com/150' },
@@ -31,10 +32,10 @@ const BookSchema: Schema = new Schema({
     tags: { type: [String], required: true },
     rating: { type: Number, required: true },
     counter: { type: Number, default: 0 }, // Default counter value
-
 }, {
     timestamps: true
 });
 
 const Book: Model<IBook> = mongoose.models.Book || mongoose.model<IBook>('Book', BookSchema);
+
 export default Book;

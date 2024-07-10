@@ -13,8 +13,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import StarIcon from '@mui/icons-material/Star';
 import Counter from "@/app/components/Counter";
-import { Toaster } from "react-hot-toast";
-
+import toast, { Toaster } from "react-hot-toast";
+import { useAuth } from '@clerk/nextjs';
 import { useRouter } from "next/navigation";
 
 
@@ -39,7 +39,7 @@ interface Book {
 
 
 export default function BookPage({ params: { id } }: BookPageProps) {
-
+  const { isLoaded, isSignedIn, userId } = useAuth();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
   const [darkMode, setDarkMode] = useState(false);
@@ -75,6 +75,29 @@ export default function BookPage({ params: { id } }: BookPageProps) {
   }, [book]);
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+  const addToLibrary = async (bookId: string) => {
+    if (!isLoaded || !isSignedIn) {
+      toast.error('Please sign in to add books to your library');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/library', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add book to library');
+      }
+
+      toast.success('Book added to library');
+    } catch (error) {
+      console.error('Error adding book to library:', error);
+      toast.error('Failed to add book to library');
+    }
   };
   if (loading) {
     return (
@@ -127,6 +150,15 @@ export default function BookPage({ params: { id } }: BookPageProps) {
             <p className="text-sm text-white">Language: English</p>
             <Badge className="text-sm "><CalendarTodayIcon className="mr-2" /> Published  At: {book?.createdAt ? format(new Date(book.createdAt), 'MMMM d, yyyy') : 'Unknown'} </Badge>
             <Button className="w-full bg-white text-black" onClick={() => router.push(`/book/${book?._id}`)} >Read Now</Button>
+            <Button
+              className="  bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={(e) => {
+                e.preventDefault();
+                addToLibrary(book?._id.toString() || '');
+              }}
+            >
+              Add to Library
+            </Button>
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white">Book Description</h2>
               <p className="text-sm text-gray-300 ">{book?.description} </p>
@@ -134,7 +166,9 @@ export default function BookPage({ params: { id } }: BookPageProps) {
 
                 <Badge className="text-sm "><VisibilityIcon className="mr-2" />  Views:  {book?.counter} </Badge>
                 <Badge className="text-sm "><MenuBookIcon className=" mr-2" />  Chapters:  {ChapterCount} </Badge>
+
               </div>
+
             </div>
             <Counter />
           </div>
