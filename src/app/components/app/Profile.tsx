@@ -1,13 +1,10 @@
 
 "use client";
 
-import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import Link from "next/link";
+
 import { Input } from "@/components/ui/input"
 import SearchIcon from '@mui/icons-material/Search';
-import { signOut } from "next-auth/react";
+
 import ProfileButton from "./ProfileButton";
 const Profile = () => {
     return (
