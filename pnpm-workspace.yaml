@@ -1,4 +1,0 @@
-onlyBuiltDependencies:
-  - '@clerk/shared'
-  - '@fortawesome/fontawesome-free'
-  - bcrypt

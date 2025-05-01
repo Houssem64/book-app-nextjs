@@ -41,7 +41,7 @@
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.1",
     "multer": "^1.4.5-lts.1",
-    "next": "14.2.3",
+    "next": "^14.2.28",
     "next-cloudinary": "^6.6.2",
     "node-fetch": "^3.3.2",
     "react": "^18",
